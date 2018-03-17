@@ -1,4 +1,6 @@
 import serial
+import subprocess
+import os
 
 #Set number
 
@@ -34,7 +36,7 @@ def findTent(tentNo):
 
 def tentacle1Play():
 	print ("Play tentacle 1 sound ,set " + str(theSetNo)+"\n")
-
+	subprocess.Popen(["aplay","/home/pi/Desktop/Cyborg/audio/SET1/T4I0S1.wav"])
 def tentacle2Play():
         print ("Play tentacle 2 sound ,set " + str(theSetNo))
 
@@ -48,25 +50,25 @@ def tentacle5Play():
         print ("Play tentacle 5 sound ,set " + str(theSetNo))
 #################################################################################
 
+def triggered(tent,set):
+	filename = "T"+str(tent)+"I0"+"S"+str(set)+".wav"
+	print filename 
+
+os.system("aplay startup.wav")
 while 1:
 	theSerial = serialSensor.readline()
+	print theSerial
 	if( theTentOrButton(theSerial) == 1):
-		# play the sound as the tentacle number
-		if (theSerial.split("%")[2].split(":")[1] == '1'):
-			tentacle1Play()
-		elif (theSerial.split("%")[2].split(":")[1] == '2'):
-			tentacle2Play()
-		elif (theSerial.split("%")[2].split(":")[1] == '3'):
-                        tentacle3Play()
-		elif (theSerial.split("%")[2].split(":")[1] == '4'):
-                        tentacle4Play()
-		elif (theSerial.split("%")[2].split(":")[1] == '5'):
-                        tentacle5Play()
-		elif (theSerial.split("%")[2].split(":")[1] == '6'):
-                        tentacle6Play()
-
+		tent = theSerial.split("%")[2].split(":")[1]
+		set = theSerial.split("%")[4].split(":")[1]
+		print "tent : "+str(tent)
+		print "set : "+str(set)
+		filePath = "audio/"+"SET"+str(set)+"/"
+		fileName = "T"+str(tent)+"I0"+"S"+str(set)+".wav"
+		subprocess.Popen(["aplay",str(filePath+fileName)]) 
 		
 	elif ( theTentOrButton(theSerial) == 2):
+		theSetNo = theSerial.split("%")[2].split(":")[1]
 		print "Buton Handling \n"
 	elif ( theTentOrButton(theSerial) == 0):
 		print "Invalid Serial Data"
